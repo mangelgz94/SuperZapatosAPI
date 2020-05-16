@@ -17,7 +17,7 @@ $factory->define(Article::class, function (Faker $faker) {
     return [
         'name'           => $articleName .' brand shoes',
         'description'    => $articleName . ' brand shoes description',
-        'price'          => $faker->numberBetween(30, 200),
+        'price'          => $faker->randomFloat(2, 30,200),
         'total_in_shelf' => $faker->numberBetween(0, 50),
         'total_in_vault' => $faker->numberBetween(0, 50),
     ];
