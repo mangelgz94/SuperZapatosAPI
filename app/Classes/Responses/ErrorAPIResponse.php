@@ -40,6 +40,6 @@ class ErrorAPIResponse implements Responsable
      */
     public function toResponse($request)
     {
-        return response()->json(['success' => false, 'error_code' => $this->errorCode, 'error_msg' => self::$errorMessages[$this->errorCode]]);
+        return response()->json(['success' => false, 'error_code' => $this->errorCode, 'error_msg' => self::$errorMessages[$this->errorCode]], $this->errorCode);
     }
 }
