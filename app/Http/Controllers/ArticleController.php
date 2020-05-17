@@ -99,12 +99,18 @@ class ArticleController extends Controller
     public function show($id)
     {
         try {
+            $articleValidator = new ArticleValidator();
+            $articleValidator->validateId($id);
             $article = Article::with('store:id,name')->where('id', $id)->firstOrFail();
             $article = fractal()->item($article)
                 ->transformWith(new ArticleTransformer())
                 ->serializeWith(new ArraySerializer());
 
             return new SuccessAPIResponse('article', $article);
+        } catch (ValidationException $validationException) {
+            Log::error($validationException);
+
+            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $modelNotFoundException) {
             Log::error($modelNotFoundException);
 
@@ -167,10 +173,16 @@ class ArticleController extends Controller
     public function destroy($id)
     {
         try {
+            $articleValidator = new ArticleValidator();
+            $articleValidator->validateId($id);
             $article = Article::findOrFail($id);
             $article->delete();
 
             return new SuccessAPIResponse('article', []);
+        }catch (ValidationException $validationException) {
+            Log::error($validationException);
+
+            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $modelNotFoundException) {
             Log::error($modelNotFoundException);
 
