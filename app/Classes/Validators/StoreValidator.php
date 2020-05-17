@@ -24,7 +24,7 @@ class StoreValidator extends BaseValidator
     protected function getUpdateRules()
     {
         return [
-            'id'      => 'required|string',
+            'id'      => 'required|numeric',
             'name'    => 'required|string',
             'address' => 'required|string'
         ];
