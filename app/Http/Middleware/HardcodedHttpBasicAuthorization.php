@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Responses\Classes\ErrorAPIResponse;
 use Closure;
-use Illuminate\Http\Response;
+use Illuminate\Validation\UnauthorizedException;
 
 class HardcodedHttpBasicAuthorization
 {
@@ -26,7 +26,7 @@ class HardcodedHttpBasicAuthorization
     {
         if ($request->getUser() != self::$credentials['USER'] || $request->getPassword() != self::$credentials['PASSWORD']) {
 
-            return new ErrorAPIResponse(Response::HTTP_UNAUTHORIZED);
+            return new ErrorAPIResponse(new UnauthorizedException());
         }
 
         return $next($request);

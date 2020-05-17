@@ -10,6 +10,10 @@ namespace App\Responses\Classes;
 
 
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
+use Illuminate\Validation\UnauthorizedException;
+use Illuminate\Validation\ValidationException;
 
 class ErrorAPIResponse implements Responsable
 {
@@ -25,11 +29,19 @@ class ErrorAPIResponse implements Responsable
 
     /**
      * ErrorAPIResponse constructor.
-     * @param int $errorCode
+     * @param \Exception $exception
      */
-    public function __construct($errorCode)
+    public function __construct(\Exception $exception)
     {
-        $this->errorCode = $errorCode;
+        if ($exception instanceof ModelNotFoundException) {
+            $this->errorCode = Response::HTTP_NOT_FOUND;
+        } elseif ($exception instanceof ValidationException) {
+            $this->errorCode = Response::HTTP_BAD_REQUEST;
+        } elseif ($exception instanceof UnauthorizedException) {
+            $this->errorCode = Response::HTTP_UNAUTHORIZED;
+        } else {
+            $this->errorCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+        }
     }
 
     /**

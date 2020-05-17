@@ -40,7 +40,7 @@ class ArticleController extends Controller
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
 
 
@@ -74,18 +74,10 @@ class ArticleController extends Controller
 
             return new SuccessAPIResponse('article', $article);
 
-        } catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
-        } catch (ModelNotFoundException $modelNotFoundException) {
-            Log::error($modelNotFoundException);
-
-            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
 
     }
@@ -107,18 +99,10 @@ class ArticleController extends Controller
                 ->serializeWith(new ArraySerializer());
 
             return new SuccessAPIResponse('article', $article);
-        } catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
-        } catch (ModelNotFoundException $modelNotFoundException) {
-            Log::error($modelNotFoundException);
-
-            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
     }
 
@@ -149,18 +133,10 @@ class ArticleController extends Controller
 
             return new SuccessAPIResponse('article', $article);
 
-        } catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
-        } catch (ModelNotFoundException $modelNotFoundException) {
-            Log::error($modelNotFoundException);
-
-            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
     }
 
@@ -179,44 +155,33 @@ class ArticleController extends Controller
             $article->delete();
 
             return new SuccessAPIResponse('article', []);
-        }catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
-        } catch (ModelNotFoundException $modelNotFoundException) {
-            Log::error($modelNotFoundException);
-
-            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
     }
 
+    /**
+     * @param int $id
+     * @return Responsable
+     */
     public function storeArticles($id)
     {
         try {
             $storeValidator = new StoreValidator();
             $storeValidator->validateId($id);
-            $articles   = Article::with('store:id,name')->where('store_id', $id)->get();
-            $articles   = fractal()->collection($articles)
+            $store    = Store::findOrFail($id);
+            $articles = Article::with('store:id,name')->where('store_id', $store->id)->get();
+            $articles = fractal()->collection($articles)
                 ->transformWith(new ArticleTransformer())
                 ->serializeWith(new ArraySerializer());
 
             return new SuccessAPIResponse('articles', $articles);
-        } catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
-        }catch (ModelNotFoundException $modelNotFoundException) {
-            Log::error($modelNotFoundException);
-
-            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
     }
 }

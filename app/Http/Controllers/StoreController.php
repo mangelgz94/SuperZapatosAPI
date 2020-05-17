@@ -37,7 +37,7 @@ class StoreController extends Controller
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
 
     }
@@ -64,14 +64,10 @@ class StoreController extends Controller
 
             return new SuccessAPIResponse('store', $store);
 
-        } catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
     }
 
@@ -92,18 +88,10 @@ class StoreController extends Controller
                 ->serializeWith(new ArraySerializer());
 
             return new SuccessAPIResponse('store', $store);
-        }catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
-        } catch (ModelNotFoundException $modelNotFoundException) {
-            Log::error($modelNotFoundException);
-
-            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
     }
 
@@ -117,11 +105,11 @@ class StoreController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $storeValidator  = new StoreValidator();
+            $storeValidator    = new StoreValidator();
             $requestParameters = $request->all();
             $storeValidator->validateUpdate($requestParameters);
-            $store = Store::findOrFail($requestParameters['id']);
-            $store->name = $requestParameters['name'];
+            $store          = Store::findOrFail($requestParameters['id']);
+            $store->name    = $requestParameters['name'];
             $store->address = $requestParameters['address'];
             $store->save();
 
@@ -131,18 +119,10 @@ class StoreController extends Controller
 
             return new SuccessAPIResponse('store', $store);
 
-        } catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
-        } catch (ModelNotFoundException $modelNotFoundException) {
-            Log::error($modelNotFoundException);
-
-            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
     }
 
@@ -154,7 +134,7 @@ class StoreController extends Controller
      */
     public function destroy($id)
     {
-        try{
+        try {
             $storeValidator = new StoreValidator();
             $storeValidator->validateId($id);
             $store = Store::findOrFail($id);
@@ -162,18 +142,10 @@ class StoreController extends Controller
             $store->delete();
 
             return new SuccessAPIResponse('store', []);
-        } catch (ValidationException $validationException) {
-            Log::error($validationException);
-
-            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
-        } catch (ModelNotFoundException $modelNotFoundException) {
-            Log::error($modelNotFoundException);
-
-            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
             Log::error($exception);
 
-            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new ErrorAPIResponse($exception);
         }
     }
 }
