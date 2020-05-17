@@ -166,7 +166,7 @@ class ArticleController extends Controller
     public function destroy($id)
     {
         try{
-            $article = Article::find($id);
+            $article = Article::findOrFail($id);
             $article->delete();
 
             return new SuccessAPIResponse('article', []);
