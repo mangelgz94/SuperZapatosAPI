@@ -10,6 +10,7 @@ namespace App\Responses\Classes;
 
 
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Response;
 
 class SuccessAPIResponse implements Responsable
 {
@@ -44,7 +45,7 @@ class SuccessAPIResponse implements Responsable
             $dataResponse['total_elements'] = count($this->data);
         }
 
-        return response()->json($dataResponse, 200);
+        return response()->json($dataResponse, Response::HTTP_OK);
     }
 
 }
