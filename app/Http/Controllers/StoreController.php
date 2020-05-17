@@ -84,12 +84,18 @@ class StoreController extends Controller
     public function show($id)
     {
         try {
+            $storeValidator = new StoreValidator();
+            $storeValidator->validateId($id);
             $store = Store::findOrFail($id);
             $store = fractal()->item($store)
                 ->transformWith(new StoreTransformer())
                 ->serializeWith(new ArraySerializer());
 
             return new SuccessAPIResponse('store', $store);
+        }catch (ValidationException $validationException) {
+            Log::error($validationException);
+
+            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $modelNotFoundException) {
             Log::error($modelNotFoundException);
 
@@ -149,11 +155,17 @@ class StoreController extends Controller
     public function destroy($id)
     {
         try{
+            $storeValidator = new StoreValidator();
+            $storeValidator->validateId($id);
             $store = Store::findOrFail($id);
             $store->articles()->delete();
             $store->delete();
 
             return new SuccessAPIResponse('store', []);
+        } catch (ValidationException $validationException) {
+            Log::error($validationException);
+
+            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $modelNotFoundException) {
             Log::error($modelNotFoundException);
 
