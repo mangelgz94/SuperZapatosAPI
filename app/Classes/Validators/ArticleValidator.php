@@ -8,63 +8,30 @@
 
 namespace App\Classes\Validators;
 
-
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
-
-class ArticleValidator
+class ArticleValidator extends BaseValidator
 {
 
-    protected static $creationRules = [
-        'name'           => 'required|string',
-        'description'    => 'required|string',
-        'price'          => 'required|numeric',
-        'total_in_shelf' => 'required|numeric',
-        'total_in_vault' => 'required|numeric',
-        'store_id'       => 'required|numeric'
-    ];
-
-    protected static $updateRules = [
-        'id'             => 'required|numeric',
-        'name'           => 'required|string',
-        'description'    => 'required|string',
-        'price'          => 'required|numeric',
-        'total_in_shelf' => 'required|numeric',
-        'total_in_vault' => 'required|numeric',
-    ];
-
-    /**
-     * @param array $data
-     * @return bool
-     * @throws ValidationException
-     */
-    public function validateCreation($data)
+    protected function getCreationRules()
     {
-        $validator = Validator::make($data, self::$creationRules);
-
-        if ($validator->fails()) {
-
-            throw new ValidationException($validator);
-        }
-
-        return true;
+        return [
+            'name'           => 'required|string',
+            'description'    => 'required|string',
+            'price'          => 'required|numeric',
+            'total_in_shelf' => 'required|numeric',
+            'total_in_vault' => 'required|numeric',
+            'store_id'       => 'required|numeric'
+        ];
     }
 
-    /**
-     * @param array $data
-     * @return bool
-     * @throws ValidationException
-     */
-    public function validateUpdate($data)
+    protected function getUpdateRules()
     {
-        $validator = Validator::make($data, self::$updateRules);
-
-        if ($validator->fails()) {
-
-            throw new ValidationException($validator);
-        }
-
-        return true;
+        return [
+            'id'             => 'required|numeric',
+            'name'           => 'required|string',
+            'description'    => 'required|string',
+            'price'          => 'required|numeric',
+            'total_in_shelf' => 'required|numeric',
+            'total_in_vault' => 'required|numeric',
+        ];
     }
-
 }
