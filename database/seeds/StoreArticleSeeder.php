@@ -1,6 +1,7 @@
 <?php
 
 use App\Article;
+use App\Store;
 use Illuminate\Database\Seeder;
 
 class StoreArticleSeeder extends Seeder
@@ -13,7 +14,7 @@ class StoreArticleSeeder extends Seeder
      */
     public function run()
     {
-        $stores = factory(\App\Store::class, 5)->create()->each(function ($store) {
+        $stores = factory(Store::class, 5)->create()->each(function ($store) {
             $articles = factory(Article::class, 10)->make();
 
             $store->articles()->saveMany($articles);
