@@ -18,4 +18,5 @@ Route::prefix('services')->group(function () {
         'articles' => 'ArticleController',
         'stores'   => 'StoreController'
     ]);
+    Route::get('/articles/store/{id}','ArticleController@storeArticles');
 });

@@ -52,4 +52,21 @@ abstract class BaseValidator
 
         return true;
     }
+
+    /**
+     * @param int $data
+     * @return bool
+     * @throws ValidationException
+     */
+    public function validateId($id)
+    {
+        $validator = Validator::make(['id' => $id], ['id' => 'required|numeric']);
+
+        if ($validator->fails()) {
+
+            throw new ValidationException($validator);
+        }
+
+        return true;
+    }
 }

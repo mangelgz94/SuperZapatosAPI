@@ -6,6 +6,7 @@ use App\Article;
 
 use App\Classes\Transformers\ArticleTransformer;
 use App\Classes\Validators\ArticleValidator;
+use App\Classes\Validators\StoreValidator;
 use App\Responses\Classes\ErrorAPIResponse;
 use App\Responses\Classes\SuccessAPIResponse;
 use App\Store;
@@ -128,10 +129,10 @@ class ArticleController extends Controller
             $articleValidator  = new ArticleValidator();
             $requestParameters = $request->all();
             $articleValidator->validateUpdate($requestParameters);
-            $article = Article::with('store:id,name')->where('id', $requestParameters['id'])->firstOrFail();
-            $article->name = $requestParameters['name'];
-            $article->description = $requestParameters['description'];
-            $article->price = $requestParameters['price'];
+            $article                 = Article::with('store:id,name')->where('id', $requestParameters['id'])->firstOrFail();
+            $article->name           = $requestParameters['name'];
+            $article->description    = $requestParameters['description'];
+            $article->price          = $requestParameters['price'];
             $article->total_in_shelf = $requestParameters['total_in_shelf'];
             $article->total_in_vault = $requestParameters['total_in_vault'];
             $article->save();
@@ -165,12 +166,38 @@ class ArticleController extends Controller
      */
     public function destroy($id)
     {
-        try{
+        try {
             $article = Article::findOrFail($id);
             $article->delete();
 
             return new SuccessAPIResponse('article', []);
         } catch (ModelNotFoundException $modelNotFoundException) {
+            Log::error($modelNotFoundException);
+
+            return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
+        } catch (\Exception $exception) {
+            Log::error($exception);
+
+            return new ErrorAPIResponse(Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function storeArticles($id)
+    {
+        try {
+            $storeValidator = new StoreValidator();
+            $storeValidator->validateId($id);
+            $articles   = Article::with('store:id,name')->where('store_id', $id)->get();
+            $articles   = fractal()->collection($articles)
+                ->transformWith(new ArticleTransformer())
+                ->serializeWith(new ArraySerializer());
+
+            return new SuccessAPIResponse('articles', $articles);
+        } catch (ValidationException $validationException) {
+            Log::error($validationException);
+
+            return new ErrorAPIResponse(Response::HTTP_BAD_REQUEST);
+        }catch (ModelNotFoundException $modelNotFoundException) {
             Log::error($modelNotFoundException);
 
             return new ErrorAPIResponse(Response::HTTP_NOT_FOUND);
